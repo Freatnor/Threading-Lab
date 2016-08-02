@@ -80,7 +80,9 @@ public class MainActivity extends AppCompatActivity {
         protected Bitmap doInBackground(Uri... params) {
             try {
                 Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(params[0]));
-                return invertImageColors(bitmap);
+                bitmap = invertImageColors(bitmap);
+                publishProgress(-1);
+                return invertImage(bitmap);
             } catch (FileNotFoundException e) {
                 Log.d(TAG, "Image uri is not received or recognized");
             }
@@ -91,6 +93,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
+            if(values[0] == -1){
+                mProgressText.setText("Inverting image itself!");
+            }
             //TODO: Update the progress bar
             mProgressBar.setProgress(values[0]);
         }
@@ -110,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
             //TODO: Complete this method
             mProgressBar.setVisibility(View.VISIBLE);
             mProgressText.setVisibility(View.VISIBLE);
+            mProgressText.setText("Inverting image colors...");
         }
 
         private Bitmap invertImageColors(Bitmap bitmap) {
@@ -123,6 +129,23 @@ public class MainActivity extends AppCompatActivity {
                     //TODO: Set the current pixel's color to the new, reversed value
                     int color = mutableBitmap.getPixel(i, j);
                     mutableBitmap.setPixel(i, j, (0xFFFFFF - color) | 0xFF000000);
+                }
+                int progressVal = Math.round((long) (100 * (i / (1.0 * mutableBitmap.getWidth()))));
+                //TODO: Update the progress bar. progressVal is the current progress value out of 100
+                publishProgress(progressVal);
+            }
+            return mutableBitmap;
+        }
+
+        private Bitmap invertImage(Bitmap bitmap){
+            //You must use this mutable Bitmap in order to modify the pixels
+            Bitmap mutableBitmap = bitmap.copy(bitmap.getConfig(), true);
+
+            //Loop through each pixel, and invert the colors
+            for (int i = 0; i < mutableBitmap.getWidth(); i++) {
+                for (int j = 0; j < mutableBitmap.getHeight(); j++) {
+                    int color = bitmap.getPixel(i,j);
+                    mutableBitmap.setPixel(bitmap.getWidth() - i - 1, bitmap.getHeight() - j - 1, color);
                 }
                 int progressVal = Math.round((long) (100 * (i / (1.0 * mutableBitmap.getWidth()))));
                 //TODO: Update the progress bar. progressVal is the current progress value out of 100
