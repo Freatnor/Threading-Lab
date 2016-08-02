@@ -29,5 +29,12 @@
         android:layout_centerInParent="true"
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:visibility="invisible"/>
+    <TextView
+        android:id="@+id/progress_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Inverting image..."
+        android:layout_below="@id/progress"
+        android:visibility="invisible"/>
 
 </RelativeLayout>
